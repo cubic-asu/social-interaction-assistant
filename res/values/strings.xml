@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <string name="app_name">CapstoneOpenCV</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string android:id="@+id/emotions" name="emotions" android:layout_width="wrap_content" android:layout_height="wrap_content">Emotions</string>
+    <string android:id="@+id/action_units" name="action_units" android:layout_width="wrap_content" android:layout_height="wrap_content">Action Units</string>
+    <string name="title_activity_running">Application Running</string>
+    <string name="running">The application is running.</string>
+    <string android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/string1" name="select">Select</string>
+
+</resources>
