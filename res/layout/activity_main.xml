@@ -3,6 +3,6 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="edu.asu.capstone.MainActivity"
+    tools:context="edu.asu.cubic.app.MainActivity"
     tools:ignore="MergeRootFrame" />
 
