@@ -19,7 +19,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="edu.asu.capstone.MainActivity"
+            android:name="edu.asu.cubic.app.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,9 +28,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="edu.asu.capstone.RunningActivity"
+            android:name="edu.asu.cubic.app.RunningActivity"
             android:label="@string/title_activity_running"
-            android:parentActivityName="edu.asu.capstone.MainActivity" >
+            android:parentActivityName="edu.asu.cubic.app.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.asu.capstone.MainActivity" />
