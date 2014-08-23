@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="edu.asu.capstone"
+    package="edu.asu.cubic.app"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -33,7 +33,7 @@
             android:parentActivityName="edu.asu.cubic.app.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="edu.asu.capstone.MainActivity" />
+                android:value="edu.asu.cubic.app.MainActivity" />
         </activity>
     </application>	
 </manifest>
