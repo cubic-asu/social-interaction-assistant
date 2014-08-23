@@ -1,6 +1,6 @@
 package edu.asu.cubic.app;
 
-import edu.asu.capstone.R;
+import edu.asu.cubic.app.R;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
