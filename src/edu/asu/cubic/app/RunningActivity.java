@@ -24,7 +24,7 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 
-import edu.asu.capstone.R;
+import edu.asu.cubic.app.R;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
