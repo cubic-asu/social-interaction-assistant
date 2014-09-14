@@ -9,5 +9,9 @@
     <string name="title_activity_running">Application Running</string>
     <string name="running">The application is running.</string>
     <string android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/string1" name="select">Select</string>
+    <string name="stop_button">Stop</string>
+    <string name="camera_view">Camera view</string>
+    <string name="select_option">Type of feedback:</string>
+    <string name="select_description">Please choose which type of feedback you would like to receive. Emotions or action units.</string>
 
 </resources>
