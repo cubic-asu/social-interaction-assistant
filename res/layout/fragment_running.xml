@@ -15,28 +15,23 @@
         android:layout_height="wrap_content"
         android:layout_weight="0.71"
         android:text="@string/running"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <!--SurfaceView
-        android:id="@+id/surfaceView1"
-        android:layout_width="285dp"
-        android:layout_height="10dp"
-        android:layout_marginRight="52dp"
-        android:layout_weight="3.22" /-->
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:contentDescription="@string/running" />
         
     <org.opencv.android.JavaCameraView
         android:id="@+id/opencv_camera_view"
         android:layout_width="285dp"
         android:layout_height="10dp"
         android:layout_weight="3.22"
-     />
+        android:contentDescription="@string/camera_view" />
     
     <Button
         android:id="@+id/btnStop"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="stopThread"
-        android:text="Button" />
+        android:text="@string/stop_button"
+        android:contentDescription="@string/stop_button" />
 
     
 </LinearLayout>
