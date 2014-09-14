@@ -14,9 +14,14 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
+/* MainActivity is the home screen activity at which point
+ * the user can select between "emotions" or "action units"
+ * and proceed to RunningActivity.
+ */
 public class MainActivity extends ActionBarActivity {
 	public final static String EXTRA_SELECTION = "edu.asu.capstone.SELECTION";
-			
+
+	// Initialize the activity and set the appropriate content view.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,7 +85,7 @@ public class MainActivity extends ActionBarActivity {
         }
         else {
         	checked = false;
-        	//Somehow alert the user that they need to select one.
+        	// Alert the user that they need to select one of the two options.
         	Toast.makeText(this, "Please select an option.", Toast.LENGTH_SHORT).show();
         }
         
