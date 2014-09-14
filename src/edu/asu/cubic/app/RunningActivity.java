@@ -47,6 +47,11 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/*
+ * RunningActivity is the activity in which photos are being taken at a set interval
+ * and are sent to the processing device. OpenCV is used for face detection to ensure
+ * there is a face within the frame before taking a picture.
+ */
 public class RunningActivity extends ActionBarActivity implements CvCameraViewListener2{
 	public String selection;
 	// Variables are needed for OpenCV Camera API
@@ -58,13 +63,14 @@ public class RunningActivity extends ActionBarActivity implements CvCameraViewLi
     private CascadeClassifier      mJavaDetector;
     private int                    mAbsoluteFaceSize   = 0;
     private static CameraBridgeViewBase   mOpenCvCameraView;
-    // Variables needed for timer
-    private static long DELAY= 1; // delay in secs
+    // Variables needed for timer.
+    private static long DELAY = 1; // in seconds
     private long prevCaptureTime= 0;
     public RunningActivity() {
     	Log.i(TAG, "Instantiated new " + this.getClass());
     }
     
+    // Initialize the activity and set the appropriate content view.
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "********** In onCreate method *********");
@@ -108,7 +114,6 @@ public class RunningActivity extends ActionBarActivity implements CvCameraViewLi
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.running, menu);
 		return true;
@@ -153,18 +158,18 @@ public class RunningActivity extends ActionBarActivity implements CvCameraViewLi
 		finish();
 	}
 	
-	// This method is called when OpenCV is initiated
+	// This method is called when OpenCV is initiated.
     private BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
-        	Log.i(TAG, "********** In onManagerConencted *********");
+        	Log.i(TAG, "********** In onManagerConnected *********");
             switch (status) {
                 case LoaderCallbackInterface.SUCCESS:
                 {
                     Log.i(TAG, "********** OpenCV loaded successfully *********");
                     
                     // Load native library after(!) OpenCV initialization
-                    //System.loadLibrary("detection_based_tracker");
+                    // System.loadLibrary("detection_based_tracker");
 
                     try {
                     	
@@ -226,10 +231,10 @@ public class RunningActivity extends ActionBarActivity implements CvCameraViewLi
 		Core.flip(mRgbaT, mRgbaT, 1);
 		Imgproc.resize(mRgbaT, mRgbaT, mRgba.size());
 		
-		long currCaptureTime=  System.currentTimeMillis();
+		long currCaptureTime = System.currentTimeMillis();
 		// Check if the time between current and previous captures is more than the delay
-		if((currCaptureTime-prevCaptureTime)>DELAY*1000){
-            if (mJavaDetector != null){
+		if((currCaptureTime-prevCaptureTime)>DELAY*1000) {
+            if (mJavaDetector != null) {
             	// Detect Faces
             	mJavaDetector.detectMultiScale(temp, faces, 1.1, 2, 2, // TODO: objdetect.CV_HAAR_SCALE_IMAGE
             			new Size(mAbsoluteFaceSize, mAbsoluteFaceSize), new Size());
@@ -237,19 +242,19 @@ public class RunningActivity extends ActionBarActivity implements CvCameraViewLi
             prevCaptureTime= currCaptureTime;
 		}
 		
-		if(faces != null){
+		if(faces != null) {
     		Rect[] facesArray = faces.toArray();
-    		if(facesArray.length!=0){
+    		if(facesArray.length != 0) {
     			// If Faces are detected then add face boundaries
-    			String message= "************* Face Detected ************* NumFaces : "+facesArray.length;
-    			for (int i = 0; i < facesArray.length; i++){
+    			String message = "************* Face Detected ************* NumFaces : " + facesArray.length;
+    			for (int i = 0; i < facesArray.length; i++) {
     				Core.rectangle(temp, facesArray[i].tl(), facesArray[i].br(), FACE_RECT_COLOR, 3);
     				Core.rectangle(mRgbaT, facesArray[i].tl(), facesArray[i].br(), FACE_RECT_COLOR, 3);
-    				message+= " facesArray[i].tl(): "+facesArray[i].tl()+" facesArray[i].br(): "+facesArray[i].br();
+    				message += " facesArray[i].tl(): "+facesArray[i].tl()+" facesArray[i].br(): "+facesArray[i].br();
     			}
     			// Write the image to file
     			Uri uriTarget = getContentResolver().insert(Media.EXTERNAL_CONTENT_URI, new ContentValues());
-    			message+= "\n Writing to "+uriTarget;
+    			message += "\n Writing to " + uriTarget;
     			Log.i(TAG, message);
     		}
     	}
