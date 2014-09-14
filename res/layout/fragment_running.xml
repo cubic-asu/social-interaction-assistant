@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="0.71"
         android:text="@string/running"
-        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="18sp"
         android:contentDescription="@string/running"
         android:focusable="true" />
         
@@ -33,6 +33,7 @@
         android:layout_height="wrap_content"
         android:onClick="stopThread"
         android:text="@string/stop_button"
+        android:textSize="18sp"
         android:contentDescription="@string/stop_button"
         android:focusable="true" />
 
