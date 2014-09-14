@@ -8,6 +8,15 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="edu.asu.cubic.app.MainActivity$PlaceholderFragment" >
+    
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="24dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/select_option"
+        android:contentDescription="@string/select_description"
+        android:focusable="true" />
 
     <RadioGroup
         android:id="@+id/rg"
@@ -20,39 +29,29 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/emotions" />
+            android:text="@string/emotions"
+            android:contentDescription="@string/emotions"
+            android:focusable="true" />
 
         <RadioButton
             android:id="@+id/rbtnActionUnits"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/action_units" />
+            android:text="@string/action_units"
+            android:contentDescription="@string/action_units" 
+            android:focusable="true" />
 
     </RadioGroup>
 
-    <!--
-    <Button
-        android:id="@+id/emotionsButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/emotions" 
-        android:layout_weight="1"
-        android:onClick="initiateApplication"/>
-
-    <Button
-        android:id="@+id/actionUnitsButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/action_units"
-        android:layout_weight="1"
-        android:onClick="initiateApplication"/>-->
     <Button
         android:id="@+id/btnSelect"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="@string/select" 
-        android:onClick="initiateApplication"/>
+        android:text="@string/select"
+        android:contentDescription="@string/select"
+        android:focusable="true"
+        android:onClick="initiateApplication" />
 
 </LinearLayout>
