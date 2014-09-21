@@ -90,12 +90,16 @@ public class RunningActivity extends ActionBarActivity implements CvCameraViewLi
 		//startApplication();
 	}
 
+	// Called when the activity is no longer visible to the user
+	// ie, because another activity has been resumed and is covering this one 
 	@Override
 	public void onStop() {
 		super.onStop();
 		mOpenCvCameraView= null;
 	}
 	
+	// Called when the system is about to start resuming a previous activity - 
+	//		pauses the cameraView
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -103,6 +107,7 @@ public class RunningActivity extends ActionBarActivity implements CvCameraViewLi
             mOpenCvCameraView.disableView();
 	}
 	
+	// Called when the activity will start interacting with the user
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -111,6 +116,12 @@ public class RunningActivity extends ActionBarActivity implements CvCameraViewLi
 		mOpenCvCameraView.setCvCameraViewListener(this);
 		mOpenCvCameraView.enableView();
 	}
+	
+	// The final call you receive before your activity is destroyed
+    public void onDestroy() {
+        super.onDestroy();
+        //finish();
+    }
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -210,13 +221,14 @@ public class RunningActivity extends ActionBarActivity implements CvCameraViewLi
         }
     };
 
-    public void onDestroy() {
-        super.onDestroy();
-        //finish();
-    }
-	// Implement the following methods from CvCameraViewListener2 class
-
-	@Override
+    
+   
+	/* 
+	 * Implement the following methods from CvCameraViewListener2 class
+	 */
+    
+    //	This method is invoked when delivery of the frame needs to be done
+    @Override
 	public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
 		mRgba = inputFrame.rgba();// a color image
 		mGray = inputFrame.gray();// a grayscale image
@@ -261,12 +273,18 @@ public class RunningActivity extends ActionBarActivity implements CvCameraViewLi
 		return mRgbaT;
 	}
 
+	// implemented abstract method inherited from CvCameraViewListener2
+    // This method is invoked when camera preview has started. After this method is invoked the frames 
+    // 		will start to be delivered to client via the onCameraFrame() callback.
 	public void onCameraViewStarted(int width, int height) {
 		Log.i(TAG,"*********** Calling Mat() *********");
 		mGray = new Mat();
 		mRgba = new Mat();
 	}
-
+	
+	// implemented abstract method inherited from CvCameraViewListener2
+	// This method is invoked when camera preview has been stopped for some reason. No frames will be 
+	//		delivered via onCameraFrame() callback after this method is called
 	public void onCameraViewStopped() {
 		mGray.release();
 		mRgba.release();
