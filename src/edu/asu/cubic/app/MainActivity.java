@@ -1,8 +1,10 @@
 package edu.asu.cubic.app;
 
 import edu.asu.cubic.app.R;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
@@ -17,6 +19,8 @@ import android.widget.Toast;
 /* MainActivity is the home screen activity at which point
  * the user can select between "emotions" or "action units"
  * and proceed to RunningActivity.
+ * It starts the main menu, allowing user to select between 
+ *	two options before starting the face detection segment.
  */
 public class MainActivity extends ActionBarActivity {
 	public final static String EXTRA_SELECTION = "edu.asu.capstone.SELECTION";
@@ -71,6 +75,28 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    public void onRbtnClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+        // Get instance of Vibrator from current Context
+    	Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+    	long[] pattern = {100, 1000, 300, 200, 100, 500, 200, 100};
+    	
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.rbtnEmotions:
+                if (checked)
+                	// Vibrate pattern
+                	v.vibrate(pattern, -1);
+                break;
+            case R.id.rbtnActionUnits:
+                if (checked)
+                	// Vibrate for 500 milliseconds
+                	v.vibrate(500);
+                break;
+        }
+    }
+    
     public void initiateApplication(View view) {
         RadioButton rbtnActionUnits = (RadioButton) findViewById(R.id.rbtnActionUnits);
         RadioButton rbtnEmotions = (RadioButton) findViewById(R.id.rbtnEmotions);
@@ -89,7 +115,14 @@ public class MainActivity extends ActionBarActivity {
         	Toast.makeText(this, "Please select an option.", Toast.LENGTH_SHORT).show();
         }
         
+        // Once button is clicked, send a vibration to the phone alerting the user that an option has been selected
+        // Face detection activity starts running
         if (checked) {
+        	// Get instance of Vibrator from current Context
+        	Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        	// Vibrate for 200 milliseconds
+        	v.vibrate(200);
+        	
         	Intent intent = new Intent(this, RunningActivity.class);
 	        intent.putExtra(EXTRA_SELECTION, selection);
 	        startActivity(intent);
