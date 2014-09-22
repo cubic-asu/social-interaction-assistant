@@ -33,8 +33,7 @@
             android:text="@string/emotions"
             android:textSize="18sp"
             android:contentDescription="@string/emotions"
-            android:focusable="true" 
-            android:onClick="onRbtnClicked"/>
+            android:focusable="true"/>
 
         <RadioButton
             android:id="@+id/rbtnActionUnits"
@@ -44,8 +43,7 @@
             android:text="@string/action_units"
             android:textSize="18sp"
             android:contentDescription="@string/action_units" 
-            android:focusable="true" 
-            android:onClick="onRbtnClicked"/>
+            android:focusable="true"/>
 
     </RadioGroup>
 
