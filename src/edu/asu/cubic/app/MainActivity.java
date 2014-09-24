@@ -4,6 +4,7 @@ import edu.asu.cubic.app.R;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
@@ -74,10 +75,40 @@ public class MainActivity extends ActionBarActivity {
         }
     }
     
+    // Vibrate testing once each radio button is clicked
+    public void onRbtnClick(View view){
+    	 // Get instance of Vibrator from current Context
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        
+    	// Start without a delay
+    	// Each element then alternates between vibrate, sleep, vibrate, sleep...
+    	long[] pattern = {0, 100, 1000, 300, 200, 100, 500, 200, 100};
+
+    	// Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+        
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.rbtnEmotions:
+                if (checked)
+                	// The '-1' here means to vibrate once
+                	// '0' would make the pattern vibrate indefinitely
+                	v.vibrate(pattern, -1);
+                break;
+            case R.id.rbtnActionUnits:
+                if (checked)
+                	// Vibrate for 1000 milliseconds
+                    v.vibrate(1000);
+                break;
+        }
+    }
     public void initiateApplication(View view) {
         RadioButton rbtnActionUnits = (RadioButton) findViewById(R.id.rbtnActionUnits);
         RadioButton rbtnEmotions = (RadioButton) findViewById(R.id.rbtnEmotions);
-        
+        // Get instance of Vibrator from current Context
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+         
+
         boolean checked = true;
         String selection = "";
         
@@ -93,8 +124,10 @@ public class MainActivity extends ActionBarActivity {
         }
         
         // Once button is clicked, start face detection activity
+        // vibrate for 300 milliseconds once button is pressed
         if (checked) {
-        	
+        	// Vibrate for 300 milliseconds
+            v.vibrate(300);
         	Intent intent = new Intent(this, RunningActivity.class);
 	        intent.putExtra(EXTRA_SELECTION, selection);
 	        startActivity(intent);
