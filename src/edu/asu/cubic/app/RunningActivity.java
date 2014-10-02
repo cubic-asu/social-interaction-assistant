@@ -1,20 +1,16 @@
 package edu.asu.cubic.app;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
-import org.opencv.android.OpenCVLoader;
+import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.android.LoaderCallbackInterface;
-import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
+import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
@@ -24,14 +20,12 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 
-import edu.asu.cubic.app.R;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.Vibrator;
 import android.provider.MediaStore.Images.Media;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -39,13 +33,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RadioButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /*
  * RunningActivity is the activity in which photos are being taken at a set interval
@@ -74,7 +64,12 @@ public class RunningActivity extends ActionBarActivity implements CvCameraViewLi
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "********** In onCreate method *********");
-		OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_8, this, mLoaderCallback);
+		if (OpenCVLoader.initDebug()) {
+			mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+		} else {
+			OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_8, this, mLoaderCallback);
+		}
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_running);
         
@@ -230,6 +225,10 @@ public class RunningActivity extends ActionBarActivity implements CvCameraViewLi
     //	This method is invoked when delivery of the frame needs to be done
     @Override
 	public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
+    	Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+    	long[] slow = {0, 100, 1000};
+    	long[] fast = {0, 100, 200, 100, 200, 100, 200};
+    	
 		mRgba = inputFrame.rgba();// a color image
 		mGray = inputFrame.gray();// a grayscale image
 		MatOfRect faces = new MatOfRect();
@@ -257,6 +256,18 @@ public class RunningActivity extends ActionBarActivity implements CvCameraViewLi
 		if(faces != null) {
     		Rect[] facesArray = faces.toArray();
     		if(facesArray.length != 0) {
+    			//Track where the faces are and vibrate accordingly.
+    			double left = (mRgbaT.width())/3;
+    			double right = (mRgbaT.width() * 2)/3;
+    			double faceCenter = facesArray[0].tl().x + (facesArray[0].br().x - facesArray[0].tl().x)/2;
+    			if (faceCenter > left && faceCenter < right) {
+    				Log.i(TAG, "\n\nCENTER\n\n");
+    				v.vibrate(fast, -1);
+    			} else {
+    				Log.i(TAG, "\n\nNOT CENTER\n\n");
+    				v.vibrate(slow, -1);
+    			}
+    			
     			// If Faces are detected then add face boundaries
     			String message = "************* Face Detected ************* NumFaces : " + facesArray.length;
     			for (int i = 0; i < facesArray.length; i++) {
