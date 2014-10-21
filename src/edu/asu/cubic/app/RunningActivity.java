@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -259,8 +260,16 @@ public class RunningActivity extends ActionBarActivity implements CvCameraViewLi
     			//Track where the faces are and vibrate accordingly.
     			double left = (mRgbaT.width())/3;
     			double right = (mRgbaT.width() * 2)/3;
-    			double faceCenter = facesArray[0].tl().x + (facesArray[0].br().x - facesArray[0].tl().x)/2;
-    			if (faceCenter > left && faceCenter < right) {
+    			double faceCenter;
+    			boolean center = false;
+    			boolean inFrame = false;
+    			for (int i = 0; i < facesArray.length; i++) {
+    				faceCenter = facesArray[i].tl().x + (facesArray[i].br().x - facesArray[i].tl().x)/2;
+    				if (faceCenter > left && faceCenter < right) {
+        				center = true;
+    				}
+    			}
+    			if (center) {
     				Log.i(TAG, "\n\nCENTER\n\n");
     				v.vibrate(fast, -1);
     			} else {
