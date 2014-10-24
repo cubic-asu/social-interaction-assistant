@@ -2,7 +2,6 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <string name="app_name">CapstoneOpenCV</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string android:id="@+id/emotions" name="emotions" android:layout_width="wrap_content" android:layout_height="wrap_content">Emotions</string>
     <string android:id="@+id/action_units" name="action_units" android:layout_width="wrap_content" android:layout_height="wrap_content">Action Units</string>
