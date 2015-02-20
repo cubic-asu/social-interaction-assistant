@@ -147,6 +147,7 @@ public class RunningFragment extends Fragment implements CvCameraViewListener2 {
 		mOpenCvCameraView.setCvCameraViewListener(this);
 		mOpenCvCameraView.enableView();
 		ViewGroup.LayoutParams lpms = mOpenCvCameraView.getLayoutParams();
+		
 		lpms.height = 960;
 		lpms.width = 640;
 		mOpenCvCameraView.setLayoutParams(lpms);
@@ -303,6 +304,7 @@ public class RunningFragment extends Fragment implements CvCameraViewListener2 {
         Imgproc.resize(temp, temp, mGray.size());
         
         Mat mRgbaT = mRgba.t();
+        Mat mRgbaTsub;
 		Core.flip(mRgbaT, mRgbaT, 1);
 		Imgproc.resize(mRgbaT, mRgbaT, mRgba.size());
 		
@@ -334,15 +336,45 @@ public class RunningFragment extends Fragment implements CvCameraViewListener2 {
     			// If Faces are detected then add face boundaries
     			String message = "************* Face Detected ************* NumFaces : " + facesArray.length;
     			
+    			
+    			
+    			//todo maybe try putting this all into an asynchronous thread
     			// Check if the time between current and previous captures is more than the delay
+    			
+    			
+    			
     			if((currCaptureTime-prevCaptureTime)>DELAY*1000) {
-	    			// Write the image to file
-    				Bitmap bit = Bitmap.createBitmap(mRgbaT.cols(), mRgbaT.rows(), Bitmap.Config.ARGB_8888);
-					Utils.matToBitmap(mRgbaT, bit);
+	    			
+    				// Write the image to file
+    				
+    				//save for laterCore.rectangle(mRgbaT, facesArray[i].tl(), facesArray[i].br(), FACE_RECT_COLOR, 3);
+    				
+    				//find biggest face
+    				int largest=0;
+    				double largestsize = 0; 
+    				for (int i = 0; i < facesArray.length; i++) {
+    					if (facesArray[i].area()>largestsize)
+    					{
+    						largestsize = facesArray[i].area();
+    						largest = i;
+    					}
+    				}	
+    				
+    				//only saves face rectangle
+    				mRgbaTsub = mRgbaT.submat(facesArray[largest]);
+    				int paddingy = (int)(mRgbaTsub.height() * .9);
+    				int paddingx =(int)(mRgbaTsub.width() * .9);
+    				mRgbaTsub.adjustROI(paddingy, paddingy, paddingx, paddingx);
+    				
+    				Bitmap bit = Bitmap.createBitmap(mRgbaTsub.cols(), mRgbaTsub.rows(), Bitmap.Config.ARGB_8888);
+					Utils.matToBitmap(mRgbaTsub, bit);
+					/*
 					
 					Log.i(TAG, "Sending image");
 					storeImage(bit);
+					*/
     				//this part was commented out
+					
 					if (connectedThread != null && connectedThread.connected) {
 						ByteArrayOutputStream baos = new ByteArrayOutputStream();
 						bit.compress(Bitmap.CompressFormat.PNG, 0, baos);     
@@ -354,6 +386,7 @@ public class RunningFragment extends Fragment implements CvCameraViewListener2 {
 						
 		    			//message += "\n Writing to " + uriTarget;
     				}
+    				
 					//commented out
 	    			prevCaptureTime= currCaptureTime;
     			}
