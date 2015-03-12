@@ -53,6 +53,7 @@ public class RunningFragment extends Fragment implements CvCameraViewListener2 {
 	BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
 	private ConnectThread connectThread;
 	private ConnectedThread connectedThread;
+	private boolean firstrun; //used to set the frame
 	
 	// Create a BroadcastReceiver for ACTION_FOUND
 	//was commented out
@@ -81,12 +82,14 @@ public class RunningFragment extends Fragment implements CvCameraViewListener2 {
     private Mat                    mGray;
     private File                   mCascadeFile;
     private CascadeClassifier      mJavaDetector;
-    private int                    mAbsoluteFaceSize   = 0;
+    private int                    mAbsoluteFaceSize   = 20;
     private static CameraBridgeViewBase   mOpenCvCameraView;
     // Variables needed for timer.
-    private static long DELAY = 1; // in seconds
+    private static double DELAY = .5; // in seconds
     private long prevCaptureTime= 0;
     private View runningView;
+    //double fx1 =0, fx2=0, fy1=0, fy2=0;
+    boolean ending = false;
     
     public RunningFragment() {
     	Log.i(TAG, "Instantiated new " + this.getClass());
@@ -146,10 +149,12 @@ public class RunningFragment extends Fragment implements CvCameraViewListener2 {
 		mOpenCvCameraView = (CameraBridgeViewBase) getActivity().findViewById(R.id.opencv_camera_view);
 		mOpenCvCameraView.setCvCameraViewListener(this);
 		mOpenCvCameraView.enableView();
+		
 		ViewGroup.LayoutParams lpms = mOpenCvCameraView.getLayoutParams();
 		
-		lpms.height = 960;
-		lpms.width = 640;
+		lpms.height = 600;
+		lpms.width = 400;
+		mOpenCvCameraView.setMaxFrameSize(lpms.width,lpms.height);
 		mOpenCvCameraView.setLayoutParams(lpms);
 		Log.i(TAG, "getMinimumHeight: " +mOpenCvCameraView.getMeasuredHeight() + " getMinimumWidth: " +mOpenCvCameraView.getMeasuredWidth());
 	}
@@ -257,7 +262,7 @@ public class RunningFragment extends Fragment implements CvCameraViewListener2 {
         // Create a media file name
         String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
         File mediaFile;
-            String mImageName="MI_"+ timeStamp +".png";
+            String mImageName="MI_"+ timeStamp +".JPEG";
             mediaFile = new File(mediaStorageDir.toString() + File.separator + mImageName);  
         return mediaFile;
     }
@@ -274,7 +279,7 @@ public class RunningFragment extends Fragment implements CvCameraViewListener2 {
             FileOutputStream fos = new FileOutputStream(pictureFile);
             //image.compress(Bitmap.CompressFormat.JPEG, 90, fos);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			image.compress(Bitmap.CompressFormat.PNG, 0, baos);     
+			image.compress(Bitmap.CompressFormat.JPEG, 100, baos);     
 			byte[] b = baos.toByteArray();
             fos.flush();
             fos.write(b);
@@ -290,6 +295,7 @@ public class RunningFragment extends Fragment implements CvCameraViewListener2 {
     //	This method is invoked when delivery of the frame needs to be done
     @Override
 	public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
+    	Log.i(TAG, "\nnew camera frame\n");
     	Vibrator v = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
     	long[] slow = {0, 100, 1000};
     	long[] fast = {0, 100, 200, 100, 200, 100, 200};
@@ -304,27 +310,35 @@ public class RunningFragment extends Fragment implements CvCameraViewListener2 {
         Imgproc.resize(temp, temp, mGray.size());
         
         Mat mRgbaT = mRgba.t();
-        Mat mRgbaTsub;
+        //Mat mRgbaTsub = mRgba.t();
+        //Rect mRgbaTframe;
+        
 		Core.flip(mRgbaT, mRgbaT, 1);
 		Imgproc.resize(mRgbaT, mRgbaT, mRgba.size());
+		Mat mRgbaTsub = temp; 
+		Log.i(TAG, "\nbefore detecting\n");
 		
         if (mJavaDetector != null) {
             // Detect Faces
             mJavaDetector.detectMultiScale(temp, faces, 1.1, 2, 2, // TODO: objdetect.CV_HAAR_SCALE_IMAGE
             new Size(mAbsoluteFaceSize, mAbsoluteFaceSize), new Size());
         }
-
+        Log.i(TAG, "\nafterdetecting\n");
 		if(faces != null) {
+			Log.i(TAG, "\nframe not null\n");
     		Rect[] facesArray = faces.toArray();
     		if(facesArray.length != 0) {
     			long currCaptureTime = System.currentTimeMillis();
     			//Track where the faces are and vibrate accordingly.
     			double left = (mRgbaT.width())/3;
     			double right = (mRgbaT.width() * 2)/3;
-    			//todo find biggest face
+    			
     			double faceCenter = facesArray[0].tl().x + (facesArray[0].br().x - facesArray[0].tl().x)/2;
+    			Log.i(TAG, "\nprevap:" + prevCaptureTime + "currcap  " + currCaptureTime + "\n");
+    			
     			if ((currCaptureTime-prevCaptureTime)>DELAY*1000) {
 	    			if (faceCenter > left && faceCenter < right) {
+	    				
 	    				Log.i(TAG, "\n\nCENTER\n\n");
 	    				v.vibrate(fast, -1);
 	    			} else {
@@ -341,14 +355,30 @@ public class RunningFragment extends Fragment implements CvCameraViewListener2 {
     			//todo maybe try putting this all into an asynchronous thread
     			// Check if the time between current and previous captures is more than the delay
     			
+    			//todo: make an array frame that does this well
     			
-    			
-    			if((currCaptureTime-prevCaptureTime)>DELAY*1000) {
+    			if((currCaptureTime-prevCaptureTime)>DELAY*1000 && !ending) {
 	    			
+    				
+    				int x1,x2,y1,y2;
+    				x1 = temp.width()/4;
+    				x2 = temp.width()*3/4;
+    				y1 = temp.height()/5;
+    				y2 = temp.height()*4/5;
+    				
+    				Log.d(TAG, "width:" + temp.width() + " " + temp.width()/6 + " " + temp.width()*5/6);
+    				Log.d(TAG, "height:" + temp.height() + " " + temp.height()/5 + " " + temp.height()*4/5);
+    				
+    				
+    				//mRgbaTsub = temp.submat(y1, y2,x1, x2);
+    				mRgbaTsub = temp;
+    				
+    				
+    				
     				// Write the image to file
     				
     				//save for laterCore.rectangle(mRgbaT, facesArray[i].tl(), facesArray[i].br(), FACE_RECT_COLOR, 3);
-    				
+    				/*
     				//find biggest face
     				int largest=0;
     				double largestsize = 0; 
@@ -361,23 +391,54 @@ public class RunningFragment extends Fragment implements CvCameraViewListener2 {
     				}	
     				
     				//only saves face rectangle
+    				
+    				double xfaceCenter = facesArray[largest].tl().x + 
+    						(facesArray[largest].br().x - facesArray[largest].tl().x)/2;
+    				
+    				double yfaceCenter = facesArray[largest].tl().y + 
+    						(facesArray[largest].br().y - facesArray[largest].tl().y)/2;
+    				
+    				Log.i(TAG, "checking: x1: "+fx1 + " x2: "+fx2 + " y1: "+fy1 + " y2: "+fy2+ " fcx: " + xfaceCenter +  "fxy: " + yfaceCenter);
+    				if (firstrun 
+    						
+    						|| !(fx1 < xfaceCenter && fx2 > xfaceCenter &&
+    						fy1 < yfaceCenter && fy2 > yfaceCenter )
+    						
+    						) //makes a frame
+    				{
     				mRgbaTsub = mRgbaT.submat(facesArray[largest]);
-    				int paddingy = (int)(mRgbaTsub.height() * .9);
-    				int paddingx =(int)(mRgbaTsub.width() * .9);
+    				int paddingy = (int)(mRgbaTsub.height() * 1);
+    				int paddingx =(int)(mRgbaTsub.width() * 1);
     				mRgbaTsub.adjustROI(paddingy, paddingy, paddingx, paddingx);
+    				fx1 = facesArray[largest].tl().x;
+    				fx2 = facesArray[largest].br().x;
+    				fy1 = facesArray[largest].tl().y;
+    				fy2 = facesArray[largest].br().y;
+    				Log.i(TAG, "before: x1: "+fx1 + " x2: "+fx2 + " y1: "+fy1 + " y2: "+fy2+ " fcx: " + xfaceCenter +  "fxy: " + yfaceCenter);
+    				
+    				double tempx = (mRgbaTsub.width() - (fx2-fx1))/2;
+    				fx1 = fx1-tempx;
+    				fx2 = fx2+tempx;
+    				
+    				double tempy = (mRgbaTsub.height() - (fy2-fy1))/2;
+    				fy1 = fy1-tempy;
+    				fy2 = fy2+tempy;
+    				Log.i(TAG, "after x1: "+fx1 + " x2: "+fx2 + " y1: "+fy1 + " y2: "+fy2+ " fcx: " + xfaceCenter +  "fxy: " + yfaceCenter);
+    				}
+    				*/
+    				
     				
     				Bitmap bit = Bitmap.createBitmap(mRgbaTsub.cols(), mRgbaTsub.rows(), Bitmap.Config.ARGB_8888);
 					Utils.matToBitmap(mRgbaTsub, bit);
-					/*
 					
 					Log.i(TAG, "Sending image");
-					storeImage(bit);
-					*/
+					//storeImage(bit);
+					
     				//this part was commented out
 					
 					if (connectedThread != null && connectedThread.connected) {
 						ByteArrayOutputStream baos = new ByteArrayOutputStream();
-						bit.compress(Bitmap.CompressFormat.PNG, 0, baos);     
+						bit.compress(Bitmap.CompressFormat.JPEG, 100, baos);     
 						byte[] b = baos.toByteArray();
 						connectedThread.write(b);
 						Log.i(TAG, "Total bytes written: " + b.length);
@@ -392,7 +453,7 @@ public class RunningFragment extends Fragment implements CvCameraViewListener2 {
     			}
     			
     			for (int i = 0; i < facesArray.length; i++) {
-    				//todo write only biggest face
+    				
     				
     				Core.rectangle(mRgbaT, facesArray[i].tl(), facesArray[i].br(), FACE_RECT_COLOR, 3);
     				message += " facesArray[i].tl(): "+facesArray[i].tl()+" facesArray[i].br(): "+facesArray[i].br();
@@ -520,6 +581,15 @@ public class RunningFragment extends Fragment implements CvCameraViewListener2 {
                 mmSocket.close();
             } catch (IOException e) { }
         }
+        
 
     }
+
+	public void startend() {
+
+		ending = true;
+    	Log.d(TAG, "ending");
+    
+		
+	}
 }

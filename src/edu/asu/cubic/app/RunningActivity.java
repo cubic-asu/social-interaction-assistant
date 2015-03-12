@@ -10,6 +10,9 @@ import android.view.View;
 
 public class RunningActivity extends FragmentActivity {
 
+	
+	Fragment runningFragment;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -17,7 +20,7 @@ public class RunningActivity extends FragmentActivity {
 		
 		// Create and commit the running fragment.
 		FragmentManager fm = getSupportFragmentManager();
-		Fragment runningFragment = fm.findFragmentById(R.id.runningContainer);
+		runningFragment = fm.findFragmentById(R.id.runningContainer);
 		
 		if (runningFragment == null) {
 			runningFragment = new RunningFragment();
@@ -46,7 +49,9 @@ public class RunningActivity extends FragmentActivity {
 		return super.onOptionsItemSelected(item);
 	}
 	
-	public void stopThread(View v) {
+	public void stopThread(View v) throws InterruptedException {
+		((RunningFragment) runningFragment).startend();
+		Thread.sleep(2000);
 		finish();
 	}
 
